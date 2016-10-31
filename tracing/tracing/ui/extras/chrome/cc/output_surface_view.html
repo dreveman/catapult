@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2016 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<link rel="stylesheet" href="/tracing/ui/extras/chrome/cc/output_surface_view.css">
+
+<link rel="import" href="/tracing/ui/analysis/object_snapshot_view.html">
+
+<script>
+'use strict';
+
+tr.exportTo('tr.ui.e.chrome.cc', function() {
+  /*
+   * Displays a output surface state snapshot in a human readable form.
+   * @constructor
+   */
+  var StateSnapshotView = tr.ui.b.define(
+      'tr-ui-e-chrome-cc-output-surface-snapshot-view',
+      tr.ui.analysis.ObjectSnapshotView);
+
+  StateSnapshotView.prototype = {
+    __proto__: tr.ui.analysis.ObjectSnapshotView.prototype,
+
+    decorate: function() {
+      Polymer.dom(this).classList.add(
+          'tr-ui-e-chrome-cc-output-surface-snapshot-view');
+      this.vsyncTimeDiv_ = document.createElement('div');
+      this.vsyncJsTimeDiv_ = document.createElement('div');
+      this.overlayTexturesDiv_ = document.createElement('div');
+      this.screenshotImage_ = document.createElement('img');
+      Polymer.dom(this).appendChild(this.vsyncTimeDiv_);
+      Polymer.dom(this).appendChild(this.vsyncJsTimeDiv_);
+      Polymer.dom(this).appendChild(this.overlayTexturesDiv_);
+      Polymer.dom(this).appendChild(this.screenshotImage_);
+    },
+
+    updateContents: function() {
+      if (this.objectSnapshot_) {
+        if (this.objectSnapshot_.vsyncTime) {
+          this.vsyncTimeDiv_.textContent = 'VSYNC Time: ' +
+              (this.objectSnapshot_.vsyncTime / 1000) + ' ms';
+        }
+        if (this.objectSnapshot_.vsyncJsTime) {
+          this.vsyncJsTimeDiv_.textContent = 'VSYNC JS Time: ' +
+              (this.objectSnapshot_.vsyncJsTime / 1000) + ' ms';
+        }
+        if (this.objectSnapshot_.overlayTextures) {
+          this.overlayTexturesDiv_.textContent = 'Overlay Textures: ' +
+              this.objectSnapshot_.overlayTextures;
+        }
+        if (this.objectSnapshot_.screenshot) {
+          this.screenshotImage_.src = 'data:image/png;base64,' +
+              this.objectSnapshot_.screenshot;
+        }
+      }
+    }
+  };
+  tr.ui.analysis.ObjectSnapshotView.register(
+    StateSnapshotView,
+    {typeName: 'cc::OutputSurface'});
+
+  return {
+    StateSnapshotView: StateSnapshotView
+  };
+});
+</script>

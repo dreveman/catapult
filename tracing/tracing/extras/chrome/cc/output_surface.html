@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2016 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<link rel="import" href="/tracing/base/base.html">
+<link rel="import" href="/tracing/model/object_instance.html">
+
+<script>
+'use strict';
+
+tr.exportTo('tr.e.cc', function() {
+  var ObjectSnapshot = tr.model.ObjectSnapshot;
+
+  /**
+   * @constructor
+   */
+  function StateSnapshot() {
+    ObjectSnapshot.apply(this, arguments);
+  }
+
+  StateSnapshot.prototype = {
+    __proto__: ObjectSnapshot.prototype,
+
+    preInitialize: function() {
+      this.vsyncTime_ = undefined;
+      this.vsyncJsTime_ = undefined;
+      this.overlayTextures_ = undefined;
+      this.screenshot_ = undefined;
+    },
+
+    initialize: function() {
+      if (this.args.vsyncTime)
+        this.vsyncTime_ = this.args.vsyncTime;
+      if (this.args.vsyncJsTime)
+        this.vsyncJsTime_ = this.args.vsyncJsTime;
+      if (this.args.overlayTextures)
+        this.overlayTextures_ = this.args.overlayTextures;
+      if (this.args.screenshot)
+        this.screenshot_ = this.args.screenshot;
+    },
+
+    /**
+     * @return {Int} VSYNC time stamp.
+     */
+    get vsyncTime() {
+      return this.vsyncTime_;
+    },
+
+    /**
+     * @return {Int} VSYNC JS time stamp.
+     */
+    get vsyncJsTime() {
+      return this.vsyncJsTime_;
+    },
+
+    /**
+     * @return {Int} number of overlay textures.
+     */
+    get overlayTextures() {
+      return this.overlayTextures_;
+    },
+
+    /**
+     * @return {String} a base64 encoded screenshot if available.
+     */
+    get screenshot() {
+      return this.screenshot_;
+    }
+  };
+
+  ObjectSnapshot.subTypes.register(
+    StateSnapshot,
+    {typeName: 'cc::OutputSurface'});
+
+  return {
+    StateSnapshot: StateSnapshot
+  };
+});
+</script>
